@@ -1,0 +1,19 @@
+# Referenzkopie der Unit, die install/opnform-install.sh im LXC nach
+# /etc/systemd/system/opnform.service schreibt (systemctl enable).
+# WorkingDirectory wird vom Installer auf das APP_DIR gesetzt (/opt/opnform).
+[Unit]
+Description=OpnForm Docker Stack (Proxmox LXC)
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/opnform
+ExecStart=/usr/bin/docker compose -f /opt/opnform/docker-compose.yml up -d
+ExecStop=/usr/bin/docker compose -f /opt/opnform/docker-compose.yml stop
+ExecReload=/usr/bin/docker compose -f /opt/opnform/docker-compose.yml up -d
+
+[Install]
+WantedBy=multi-user.target
