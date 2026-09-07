@@ -39,7 +39,7 @@ Ergebnis: Web UI unter **`http://[LXC-IP]:80`**.
 | Variable | Default | Bedeutung |
 |---|---|---|
 | `CTID` | auto (`pvesh nextid`) | Container-ID |
-| `HOSTNAME` | `opnform` | Hostname |
+| `CT_HOSTNAME` | `opnform` | Hostname |
 | `CPU` / `RAM` / `DISK` | `2` / `4096` / `12` | vCPU / MB RAM / GB Disk |
 | `STORAGE` / `TEMPLATE_STORAGE` | `local-lvm` / `local` | Storages |
 | `BRIDGE` / `IP_MODE` | `vmbr0` / `dhcp` | Netzwerk (`IP_MODE="192.168.1.50/24"` + `GATEWAY=…` für statisch) |

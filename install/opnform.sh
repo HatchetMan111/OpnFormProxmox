@@ -30,7 +30,9 @@ BRANCH="${BRANCH:-main}"
 GUEST_SCRIPT_URL="${GUEST_SCRIPT_URL:-https://raw.githubusercontent.com/${REPO}/${BRANCH}/install/opnform-install.sh}"
 
 CTID="${CTID:-}"                       # leer = automatisch via pvesh nextid
-HOSTNAME="${HOSTNAME:-opnform}"
+# Hinweis: bewusst CT_HOSTNAME statt HOSTNAME – HOSTNAME ist eine Bash-eigene
+# Variable (System-Hostname, hier z. B. "Prox") und würde den Default verdrängen.
+CT_HOSTNAME="${CT_HOSTNAME:-opnform}"
 CPU="${CPU:-2}"                        # OpnForm-Minimum: 2 (empfohlen 4 bei vielen Forms)
 RAM="${RAM:-4096}"                     # MB – 2 GB ist zu wenig (Postgres+Redis+Node), Minimum 4096
 DISK="${DISK:-12}"                     # GB für rootfs
@@ -146,9 +148,9 @@ create_or_reuse_container() {
     ns_args=(--nameserver "${DNS}")
   fi
 
-  msg_info "Erstelle LXC ${CTID} (${HOSTNAME}, ${CPU} vCPU, ${RAM} MB RAM, ${DISK} GB Disk) …"
+  msg_info "Erstelle LXC ${CTID} (${CT_HOSTNAME}, ${CPU} vCPU, ${RAM} MB RAM, ${DISK} GB Disk) …"
   pct create "${CTID}" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
-    --hostname "${HOSTNAME}" \
+    --hostname "${CT_HOSTNAME}" \
     --cores "${CPU}" \
     --memory "${RAM}" \
     --swap 512 \
@@ -229,7 +231,7 @@ main() {
   echo ""
   msg_ok "OpnForm-Setup erfolgreich abgeschlossen!"
   echo -e "  Web UI      : ${GN}http://${ip}:${WEB_PORT}${CL}"
-  echo -e "  Container   : CT ${CTID} (${HOSTNAME}) – onboot=1, nesting=1"
+  echo -e "  Container   : CT ${CTID} (${CT_HOSTNAME}) – onboot=1, nesting=1"
   echo -e "  Update      : Script erneut ausführen (idempotent) oder im LXC: bash /usr/local/bin/opnform-install.sh"
   echo -e "  Logs im LXC : journalctl -u opnform --no-pager | tail -50 ; docker logs opnform-api 2>&1 | tail -50"
   echo -e "  Deinstall   : pct stop ${CTID} && pct destroy ${CTID}"
