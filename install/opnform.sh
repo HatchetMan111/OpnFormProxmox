@@ -141,8 +141,10 @@ create_or_reuse_container() {
   if [[ "${IP_MODE}" != "dhcp" && -n "${GATEWAY}" ]]; then
     net0="${net0},gw=${GATEWAY}"
   fi
-  local ns_args=()
-  [[ -n "${DNS}" ]] && ns_args=(--nameserver "${DNS}")
+  local -a ns_args=()
+  if [[ -n "${DNS}" ]]; then
+    ns_args=(--nameserver "${DNS}")
+  fi
 
   msg_info "Erstelle LXC ${CTID} (${HOSTNAME}, ${CPU} vCPU, ${RAM} MB RAM, ${DISK} GB Disk) …"
   pct create "${CTID}" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
@@ -157,7 +159,9 @@ create_or_reuse_container() {
     --unprivileged "${UNPRIVILEGED}" \
     --features nesting=1,keyctl=1 \
     --timezone "${TIMEZONE}" \
-    "${ns_args[@]:-}"
+    "${ns_args[@]}"
+  # Hinweis: bewusst "${ns_args[@]}" OHNE :-Default – "${ns_args[@]:-}" würde bei
+  # leerem Array EIN leeres Positionsargument erzeugen -> "400 too many arguments".
   msg_ok "Container ${CTID} erstellt (onboot=1, nesting=1)."
 }
 
